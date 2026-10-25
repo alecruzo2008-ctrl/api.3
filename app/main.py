@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+
 from app.routers import clientes, pedidos, productos
 
 app = FastAPI(
@@ -11,6 +15,7 @@ app.include_router(productos.router)
 app.include_router(pedidos.router)
 
 
-@app.get("/", tags=["Inicio"])
-def inicio():
-    return {"mensaje": "API tienda ADSO", "documentacion": "/docs"}
+@app.get("/", include_in_schema=False)
+def pagina_inicio():
+    archivo = Path(__file__).parent / "static" / "index.html"
+    return FileResponse(archivo)

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tienda ADSO | Panel</title>
+  <style>
+    :root { color-scheme: light; --ink:#172333; --muted:#667487; --line:#e4eaf0; --blue:#1769aa; --pale:#f3f7fb; --green:#147d59; --red:#b43838; }
+    * { box-sizing:border-box } body { margin:0; font:15px/1.5 Segoe UI,Arial,sans-serif; color:var(--ink); background:#f5f7fa }
+    header { background:#10263d; color:white; padding:26px max(24px,calc((100% - 1180px)/2)); display:flex; justify-content:space-between; align-items:center; gap:16px }
+    header h1 { margin:0; font-size:23px } header p { margin:3px 0 0; color:#c5d3e0 } header a { color:white }
+    main { max-width:1180px; margin:25px auto; padding:0 20px }
+    .toolbar { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:18px }
+    .toolbar p { color:var(--muted); margin:0 }
+    button { border:0; border-radius:7px; padding:10px 14px; background:var(--blue); color:white; font-weight:600; cursor:pointer }
+    button.secondary { background:#e7eef5;color:#20374e } button:hover { filter:brightness(.94) }
+    .notice { display:none; padding:11px 14px; border-radius:7px; margin:12px 0 18px; background:#e7f5ef; color:var(--green) }
+    .notice.error { background:#fff0ef;color:var(--red) }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:18px }
+    .stat,.panel { background:white; border:1px solid var(--line); border-radius:10px; box-shadow:0 2px 8px #18324a0a }
+    .stat { padding:17px 19px } .stat span { display:block;color:var(--muted);font-size:13px } .stat strong { font-size:27px }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px }
+    .panel { padding:18px; margin-bottom:16px; min-width:0 } .panel h2 { margin:0 0 14px;font-size:18px }
+    form { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px }
+    form input, textarea { width:100%; border:1px solid #ccd6e0; border-radius:6px; padding:10px; font:inherit }
+    form button { grid-column:1/-1; justify-self:start } textarea { min-height:110px; resize:vertical; font-family:Consolas,monospace }
+    .wide { grid-column:1/-1 }
+    .table-wrap { overflow:auto; max-height:350px } table { width:100%; border-collapse:collapse; font-size:14px }
+    th,td { text-align:left; padding:9px 10px; border-bottom:1px solid var(--line); white-space:nowrap } th { color:#526276;background:var(--pale);font-weight:600 }
+    .empty { color:var(--muted); padding:12px 0 } .inline { display:flex; gap:8px; margin:0 0 12px } .inline input { flex:1; min-width:0;border:1px solid #ccd6e0;border-radius:6px;padding:9px;font:inherit }
+    footer { color:var(--muted); font-size:13px; text-align:center; padding:8px 20px 30px }
+    @media(max-width:760px) { .grid,.stats { grid-template-columns:1fr } header { align-items:flex-start;flex-direction:column } form { grid-template-columns:1fr } form button { grid-column:auto } }
+  </style>
+</head>
+<body>
+<header>
+  <div><h1>Tienda ADSO</h1><p>Panel de clientes, productos y pedidos</p></div>
+  <a href="/docs" target="_blank" rel="noreferrer">Abrir documentación de la API ↗</a>
+</header>
+<main>
+  <div class="toolbar"><p>Los datos se consultan y guardan en la API FastAPI conectada a MySQL.</p><button class="secondary" onclick="cargarTodo()">Actualizar información</button></div>
+  <div id="notice" class="notice"></div>
+  <section class="stats">
+    <div class="stat"><span>Clientes</span><strong id="numClientes">—</strong></div>
+    <div class="stat"><span>Productos</span><strong id="numProductos">—</strong></div>
+    <div class="stat"><span>Pedidos</span><strong id="numPedidos">—</strong></div>
+  </section>
+  <div class="grid">
+    <section class="panel"><h2>Registrar cliente</h2>
+      <form id="clienteForm"><input name="nombre" placeholder="Nombre completo" required minlength="2"><input name="correo" type="email" placeholder="Correo electrónico" required><button>Guardar cliente</button></form>
+      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Nombre</th><th>Correo</th></tr></thead><tbody id="clientesBody"></tbody></table></div>
+    </section>
+    <section class="panel"><h2>Registrar producto</h2>
+      <form id="productoForm"><input name="nombre" placeholder="Nombre del producto" required minlength="2"><input name="precio" type="number" min="0.01" step="0.01" placeholder="Precio" required><input name="stock" type="number" min="0" step="1" placeholder="Stock inicial" required><button>Guardar producto</button></form>
+      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Producto</th><th>Precio</th><th>Stock</th></tr></thead><tbody id="productosBody"></tbody></table></div>
+    </section>
+    <section class="panel wide"><h2>Crear pedido</h2>
+      <p>Escribe el cliente y los productos por sus IDs. Ejemplo: cliente 1 compra 2 Mouse y 1 Teclado.</p>
+      <form id="pedidoForm" style="display:block"><textarea name="pedido" required>{
+  "cliente_id": 1,
+  "items": [
+    {"producto_id": 1, "cantidad": 2},
+    {"producto_id": 2, "cantidad": 1}
+  ]
+}</textarea><button style="margin-top:10px">Confirmar pedido</button></form>
+      <div class="table-wrap"><table><thead><tr><th>ID</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th>Total</th><th>Detalle</th></tr></thead><tbody id="pedidosBody"></tbody></table></div>
+    </section>
+    <section class="panel wide"><h2>Detalle de pedido</h2>
+      <form id="detalleForm" class="inline"><input name="id" type="number" min="1" placeholder="Número de pedido" required><button>Consultar detalle</button></form>
+      <div id="detallePedido" class="empty">Escribe el ID de un pedido para ver sus productos.</div>
+    </section>
+  </div>
+</main>
+<footer>Panel local de aprendizaje · FastAPI + MySQL</footer>
+<script>
+const notice = document.getElementById('notice');
+function mensaje(texto, error=false) { notice.textContent=texto; notice.className='notice'+(error?' error':''); notice.style.display='block'; window.clearTimeout(mensaje.timer); mensaje.timer=window.setTimeout(()=>notice.style.display='none',5000); }
+async function api(url, options={}) { const res=await fetch(url,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}}); const raw=await res.text(); let data; try{data=raw?JSON.parse(raw):null}catch{data=raw}; if(!res.ok){const detail=data&&data.detail?data.detail:raw; throw new Error(typeof detail==='string'?detail:JSON.stringify(detail))} return data; }
+function celda(valor) { const td=document.createElement('td'); td.textContent=valor??''; return td; }
+function fila(tbody, valores) { const tr=document.createElement('tr'); valores.forEach(v=>tr.appendChild(celda(v))); tbody.appendChild(tr); }
+async function cargarTodo() { try { const [clientes,productos,pedidos]=await Promise.all([api('/clientes'),api('/productos?limite=50'),api('/pedidos')]);
+  document.getElementById('numClientes').textContent=clientes.length; document.getElementById('numProductos').textContent=productos.length; document.getElementById('numPedidos').textContent=pedidos.length;
+  const cb=document.getElementById('clientesBody'); cb.replaceChildren(); clientes.forEach(c=>fila(cb,[c.id,c.nombre,c.correo])); if(!clientes.length) cb.innerHTML='<tr><td colspan="3" class="empty">Aún no hay clientes</td></tr>';
+  const pb=document.getElementById('productosBody'); pb.replaceChildren(); productos.forEach(p=>fila(pb,[p.id,p.nombre,Number(p.precio).toLocaleString('es-CO'),p.stock])); if(!productos.length) pb.innerHTML='<tr><td colspan="4" class="empty">Aún no hay productos</td></tr>';
+  const ob=document.getElementById('pedidosBody'); ob.replaceChildren(); pedidos.forEach(p=>{const tr=document.createElement('tr'); [p.id,p.cliente,new Date(p.fecha).toLocaleString('es-CO'),p.estado,Number(p.total).toLocaleString('es-CO')].forEach(v=>tr.appendChild(celda(v))); const td=document.createElement('td');const b=document.createElement('button');b.className='secondary';b.textContent='Ver';b.onclick=()=>mostrarDetalle(p.id);td.appendChild(b);tr.appendChild(td);ob.appendChild(tr)}); if(!pedidos.length) ob.innerHTML='<tr><td colspan="6" class="empty">Aún no hay pedidos</td></tr>';
+ } catch(e) { mensaje('No se pudo cargar la API: '+e.message+' · Revisa que FastAPI esté activo y MySQL conectado.',true); } }
+document.getElementById('clienteForm').addEventListener('submit',async e=>{e.preventDefault();const f=new FormData(e.currentTarget);try{await api('/clientes',{method:'POST',body:JSON.stringify({nombre:f.get('nombre'),correo:f.get('correo')})});e.currentTarget.reset();mensaje('Cliente guardado.');await cargarTodo()}catch(err){mensaje(err.message,true)}});
+document.getElementById('productoForm').addEventListener('submit',async e=>{e.preventDefault();const f=new FormData(e.currentTarget);try{await api('/productos',{method:'POST',body:JSON.stringify({nombre:f.get('nombre'),precio:Number(f.get('precio')),stock:Number(f.get('stock'))})});e.currentTarget.reset();mensaje('Producto guardado.');await cargarTodo()}catch(err){mensaje(err.message,true)}});
+document.getElementById('pedidoForm').addEventListener('submit',async e=>{e.preventDefault();try{const body=JSON.parse(new FormData(e.currentTarget).get('pedido'));const r=await api('/pedidos',{method:'POST',body:JSON.stringify(body)});mensaje(`Pedido #${r.id} creado. Total: ${Number(r.total).toLocaleString('es-CO')}`);await cargarTodo();await mostrarDetalle(r.id)}catch(err){mensaje('No se pudo crear el pedido: '+err.message,true)}});
+async function mostrarDetalle(id) { try {const p=await api('/pedidos/'+id);const cont=document.getElementById('detallePedido');cont.replaceChildren();const h=document.createElement('p');h.textContent=`Pedido #${p.id} · ${p.cliente} · Total ${Number(p.total).toLocaleString('es-CO')}`;cont.appendChild(h);const table=document.createElement('table');table.innerHTML='<thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>';const body=document.createElement('tbody');p.items.forEach(i=>fila(body,[i.producto,i.cantidad,Number(i.precio_unitario).toLocaleString('es-CO'),Number(i.subtotal).toLocaleString('es-CO')]));table.appendChild(body);cont.appendChild(table)}catch(e){mensaje(e.message,true)} }
+document.getElementById('detalleForm').addEventListener('submit',e=>{e.preventDefault();mostrarDetalle(new FormData(e.currentTarget).get('id'))});
+cargarTodo();
+</script>
+</body>
+</html>

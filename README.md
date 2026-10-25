@@ -39,7 +39,11 @@ En `.env`, coloca la clave del usuario MySQL `api_adso`. No compartas ni subas e
 
 Si PowerShell bloquea la activación, ejecuta `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` en esa ventana y vuelve a ejecutar el comando de activación.
 
-## 4. Ejecutar y probar
+## 4. Abrir el panel web y ejecutar la API
+
+Inicia la API y abre <http://127.0.0.1:8000/> para ver el panel web. Desde allí puedes consultar clientes, productos y pedidos; registrar clientes y productos; crear pedidos y consultar su detalle. Swagger sigue disponible en <http://127.0.0.1:8000/docs>.
+
+## 5. Ejecutar y probar
 
 Desde la raíz del proyecto, con `.venv` activo:
 
@@ -61,7 +65,7 @@ Abre <http://127.0.0.1:8000/docs>. Prueba `GET /clientes`, `GET /productos`, cre
 
 Con los datos semilla el total esperado es 150000. Consulta `GET /pedidos/{id}` y revisa en MySQL que el stock bajó. Intenta crear un pedido con stock insuficiente: debe responder 409 y revertir toda la operación. Los errores principales son 404 para registros inexistentes, 409 para correo duplicado o stock insuficiente y 422 para datos inválidos.
 
-## 5. Subir a GitHub
+## 6. Subir a GitHub
 
 Crea un repositorio vacío en GitHub. En PowerShell, desde la raíz del proyecto, sustituye la URL por la de tu repositorio:
 
@@ -83,7 +87,7 @@ git push -u origin main
 
 Si `origin` ya existe, inspecciónalo con `git remote -v` y actualízalo con `git remote set-url origin URL_DEL_REPOSITORIO`.
 
-## 6. ZIP de entrega
+## 7. ZIP de entrega
 
 La guía académica también solicita un ZIP. Desde la carpeta raíz del proyecto:
 
@@ -93,14 +97,17 @@ Compress-Archive -Path app, sql, requirements.txt, README.md, .env.example -Dest
 
 No incluyas `.env` ni `.venv`. Guarda capturas de Swagger, el pedido exitoso, detalle, stock antes/después, consultas JOIN y el rechazo por falta de stock.
 
-## 7. Cómo se distribuye la lógica
+## 8. Cómo se distribuye la lógica
 
-- `app/main.py`: crea la aplicación e incluye los routers.
+- `app/main.py`: crea la aplicación, sirve el panel web e incluye los routers.
 - `app/database.py`: conecta con MySQL y confirma o revierte transacciones.
 - `app/schemas.py`: valida cuerpos y parámetros recibidos.
 - `app/routers/clientes.py`: consulta y crea clientes.
 - `app/routers/productos.py`: consulta, crea productos y cambia stock.
 - `app/routers/pedidos.py`: crea pedidos atómicos y consulta encabezado y detalle.
+- `app/static/index.html`: interfaz web para ver y administrar clientes, productos y pedidos.
 - `sql/`: define tablas y datos de ejemplo.
 
 La tabla `detalle_pedidos` representa la relación muchos a muchos entre pedidos y productos. Las claves foráneas comprueban relaciones válidas. InnoDB permite que el pedido, sus detalles y el descuento de stock se confirmen juntos o se reviertan juntos.
+
+
