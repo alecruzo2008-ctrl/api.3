@@ -14,7 +14,7 @@ def conectar():
         port=int(os.getenv("DB_PORT", "3306")),
         user=os.environ["DB_USER"],
         password=os.environ["DB_PASSWORD"],
-        database=os.getenv("DB_NAME", "tienda_adso"),
+        database=os.getenv("DB_NAME", "tienda_adso_1"),
         charset="utf8mb4",
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=False,

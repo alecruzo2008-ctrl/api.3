@@ -1,4 +1,4 @@
-USE tienda_adso;
+USE tienda_adso_1;
 -- Ejecutar una sola vez para evitar duplicados.
 INSERT INTO clientes (nombre, correo) VALUES
   ('Ana Pérez', 'ana@example.com'),

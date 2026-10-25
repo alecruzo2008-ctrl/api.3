@@ -15,12 +15,12 @@ Este proyecto implementa clientes, productos y pedidos relacionados. La creació
 
 1. En MySQL Workbench o phpMyAdmin, ejecuta `sql/01_esquema.sql` completo.
 2. Ejecuta `sql/02_datos_prueba.sql` una sola vez.
-3. Verifica que existen dos clientes y tres productos con `SELECT * FROM tienda_adso.clientes;` y `SELECT * FROM tienda_adso.productos;`.
+3. Verifica que existen dos clientes y tres productos con `SELECT * FROM tienda_adso_1.clientes;` y `SELECT * FROM tienda_adso_1.productos;`.
 4. Con un usuario administrador, crea el usuario de la API y otorga permisos. Cambia la contraseña:
 
 ```sql
 CREATE USER IF NOT EXISTS 'api_adso'@'localhost' IDENTIFIED BY 'ClaveLocalFuerte123!';
-GRANT SELECT, INSERT, UPDATE, DELETE ON tienda_adso.* TO 'api_adso'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON tienda_adso_1.* TO 'api_adso'@'localhost';
 ```
 
 ## 3. Preparar Python desde PowerShell
@@ -35,7 +35,7 @@ Copy-Item .env.example .env
 notepad .env
 ```
 
-En `.env`, coloca la clave del usuario MySQL `api_adso`. No compartas ni subas ese archivo. `.gitignore` ya excluye `.env` y `.venv`.
+En `.env`, coloca la clave del usuario MySQL `api_adso`. Si al crear el usuario elegiste otra clave diferente a la de ejemplo, reemplázala allí. No compartas ni subas ese archivo. `.gitignore` ya excluye `.env` y `.venv`.
 
 Si PowerShell bloquea la activación, ejecuta `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` en esa ventana y vuelve a ejecutar el comando de activación.
 
@@ -130,5 +130,7 @@ No incluyas `.env` ni `.venv`. Guarda capturas de Swagger, el pedido exitoso, de
 - `sql/`: define tablas y datos de ejemplo.
 
 La tabla `detalle_pedidos` representa la relación muchos a muchos entre pedidos y productos. Las claves foráneas comprueban relaciones válidas. InnoDB permite que el pedido, sus detalles y el descuento de stock se confirmen juntos o se reviertan juntos.
+
+
 
 

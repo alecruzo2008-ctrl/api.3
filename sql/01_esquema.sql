@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS tienda_adso CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE tienda_adso;
+CREATE DATABASE IF NOT EXISTS tienda_adso_1 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE tienda_adso_1;
 
 CREATE TABLE IF NOT EXISTS clientes (
   id INT AUTO_INCREMENT PRIMARY KEY,
