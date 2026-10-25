@@ -1,3 +1,5 @@
+# api.3
+
 # Taller ADSO 03 - API de pedidos con FastAPI y MySQL
 
 Este proyecto implementa clientes, productos y pedidos relacionados. La creación de pedido guarda su encabezado y detalles, conserva el precio de venta y descuenta inventario dentro de una transacción MySQL.
