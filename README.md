@@ -39,6 +39,27 @@ En `.env`, coloca la clave del usuario MySQL `api_adso`. No compartas ni subas e
 
 Si PowerShell bloquea la activación, ejecuta `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` en esa ventana y vuelve a ejecutar el comando de activación.
 
+## Iniciar y detener la API con PowerShell
+
+Desde la raíz del proyecto, inicia el servidor en segundo plano:
+
+```powershell
+.\iniciar_api.ps1
+```
+
+Abre el panel en <http://127.0.0.1:8000/>. Para apagarlo:
+
+```powershell
+.\detener_api.ps1
+```
+
+Los mensajes del servidor quedan en `api.log` y `api-error.log`. Si Windows bloquea la ejecución del script, permite scripts solo en la ventana actual y vuelve a iniciarlo:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\iniciar_api.ps1
+```
+
 ## 4. Abrir el panel web y ejecutar la API
 
 Inicia la API y abre <http://127.0.0.1:8000/> para ver el panel web. Desde allí puedes consultar clientes, productos y pedidos; registrar clientes y productos; crear pedidos y consultar su detalle. Swagger sigue disponible en <http://127.0.0.1:8000/docs>.
