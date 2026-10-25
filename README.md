@@ -47,7 +47,7 @@ Desde la raíz del proyecto, inicia el servidor en segundo plano:
 .\iniciar_api.ps1
 ```
 
-Abre el panel en <http://127.0.0.1:8000/>. Para apagarlo:
+Abre el panel en <http://127.0.0.1:8000/>. En “Crear pedido” selecciona un cliente, agrega productos desde listas y define sus cantidades; el panel arma el cuerpo que necesita la API automáticamente. Para apagarla:
 
 ```powershell
 .\detener_api.ps1
