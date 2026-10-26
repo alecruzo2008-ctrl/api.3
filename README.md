@@ -2,7 +2,7 @@
 
 # Taller ADSO 03 - API de pedidos con FastAPI y MySQL
 
-Este proyecto implementa clientes, productos y pedidos relacionados. La creación de pedido guarda su encabezado y detalles, conserva el precio de venta y descuenta inventario dentro de una transacción MySQL.
+Este proyecto implementa clientes, productos y pedidos relacionados. Para reconstruirlo paso a paso y guardar commits incrementales, consulta `GUIA_MANUAL.md`. La creación de pedido guarda su encabezado y detalles, conserva el precio de venta y descuenta inventario dentro de una transacción MySQL.
 
 ## 1. Requisitos
 
@@ -130,6 +130,7 @@ No incluyas `.env` ni `.venv`. Guarda capturas de Swagger, el pedido exitoso, de
 - `sql/`: define tablas y datos de ejemplo.
 
 La tabla `detalle_pedidos` representa la relación muchos a muchos entre pedidos y productos. Las claves foráneas comprueban relaciones válidas. InnoDB permite que el pedido, sus detalles y el descuento de stock se confirmen juntos o se reviertan juntos.
+
 
 
 
